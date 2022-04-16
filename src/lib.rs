@@ -49,15 +49,6 @@ async fn fetch_articles(user_id: &str) -> Result<String> {
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize, Debug)]
-    struct Data {
-        uid: String,
-    }
-    #[derive(Serialize, Deserialize, Debug)]
-    struct FetchPublicDiariesRequest {
-        data: Data,
-    }
-
-    #[derive(Serialize, Deserialize, Debug)]
     struct Entry {
         id: String,
         author: String,
