@@ -9,7 +9,7 @@ fn log_request(req: &Request) {
         Date::now().to_string(),
         req.path(),
         req.cf().coordinates().unwrap_or_default(),
-        req.cf().region().unwrap_or("unknown region".into())
+        req.cf().region().unwrap_or_else(|| "unknown region".into())
     );
 }
 
@@ -29,11 +29,11 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
             if let Some(user_id) = ctx.param("user_id") {
                 return Ok(
                     Response::from_bytes(fetch_articles(user_id).await?.into_bytes())?
-                        .with_headers((|| {
+                        .with_headers({
                             let mut headers = Headers::new();
-                            headers.set("content-type", "application/rss+xml");
+                            headers.set("content-type", "application/rss+xml").unwrap();
                             headers
-                        })()),
+                        }),
                 );
             }
 
@@ -61,38 +61,40 @@ async fn fetch_articles(user_id: &str) -> Result<String> {
     struct Entry {
         id: String,
         author: String,
-        contentMd: String,
+        #[serde(rename = "contentMd")]
+        content_md: String,
         #[serde(with = "ts_milliseconds")]
-        createdAt: DateTime<Utc>,
+        #[serde(rename = "createdAt")]
+        created_at: DateTime<Utc>,
         #[serde(with = "ts_milliseconds")]
-        lastUpdatedAt: DateTime<Utc>,
+        #[serde(rename = "lastUpdatedAt")]
+        last_updated_at: DateTime<Utc>,
     }
     #[derive(Deserialize, Debug)]
     struct FetchPublicDiariesResponse {
         result: Vec<Entry>,
     }
 
-    let mut req = Request::new_with_init(
+    let req = Request::new_with_init(
         "https://asia-northeast1-wywiwya.cloudfunctions.net/fetchPublicDiaries",
         RequestInit::new()
             .with_method(Method::Post)
-            .with_cf_properties((|| {
-                let mut prop = CfProperties::default();
+            .with_cf_properties({
+                let mut prop = CfProperties::new();
                 prop.cache_ttl = Some(60);
                 prop
-            })())
-            .with_headers((|| {
+            })
+            .with_headers({
                 let mut headers = Headers::new();
-                headers.set("content-type", "application/json");
+                headers.set("content-type", "application/json").unwrap();
                 headers
-            })())
+            })
             .with_body(Some(wasm_bindgen::JsValue::from_str(
                 &json!({"data": { "uid": user_id }}).to_string(),
             ))),
     )
     .unwrap();
 
-    use std::convert::TryInto;
     let res: FetchPublicDiariesResponse = Fetch::Request(req)
         .send()
         .await
@@ -107,31 +109,31 @@ async fn fetch_articles(user_id: &str) -> Result<String> {
         .last_build_date(
             res.result
                 .last()
-                .map(|r| r.lastUpdatedAt)
-                .unwrap_or(Utc::now())
+                .map(|r| r.last_updated_at)
+                .unwrap_or_else(Utc::now)
                 .to_rfc2822(),
         )
-        .items((|| {
+        .items(
             res.result
                 .into_iter()
                 .map(|it| {
                     let Entry {
                         author,
                         id,
-                        contentMd,
-                        createdAt,
+                        content_md,
+                        created_at,
                         ..
                     } = it;
 
                     rss::ItemBuilder::default()
                         .author(Some(author))
                         .link(format!("https://wywiwya.smallkirby.xyz/view/{}", id))
-                        .description(Some(contentMd))
-                        .pub_date(createdAt.to_rfc2822())
+                        .description(Some(content_md))
+                        .pub_date(created_at.to_rfc2822())
                         .build()
                 })
-                .collect::<Vec<rss::Item>>()
-        })())
+                .collect::<Vec<rss::Item>>(),
+        )
         .build();
 
     Ok(channel.to_string())
