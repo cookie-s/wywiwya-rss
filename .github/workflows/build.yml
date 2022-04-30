@@ -1,19 +1,21 @@
-name: deploy
+name: build
 
 on:
   push:
     branches:
-      - master
+      - '*'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    name: Deploy
+    name: Build
     steps:
       - uses: actions/checkout@v2
 
-      - name: Publish
+      - name: Build
         uses: cookie-s/wrangler-action-for-rust@main
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          publish: false
+          postCommands: |
+            wrangler build
