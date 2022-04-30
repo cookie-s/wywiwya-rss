@@ -1,0 +1,19 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Publish
+        uses: cookie-s/wrangler-action-for-rust@main
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
