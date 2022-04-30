@@ -941,7 +941,7 @@ dependencies = [
 name = "wywiwya-rss"
 version = "0.1.0"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
  "chrono",
  "console_error_panic_hook",
  "rss",
