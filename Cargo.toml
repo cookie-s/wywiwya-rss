@@ -15,7 +15,7 @@ cfg-if = "1.0.0"
 worker = "0.0.9" # https://rustrepo.com/repo/cloudflare-workers-rs
 serde_json = "1.0.82"
 serde = {version = "1.0.142", features = ["derive"]}
-chrono = {version = "0.4.19", features = ["serde"]}
+chrono = {version = "0.4.20", features = ["serde"]}
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
