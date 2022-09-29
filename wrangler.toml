@@ -1,22 +1,11 @@
 name = "wywiwya-rss"
-type = "javascript"
+account_id = "9d48568bcdcd05a662c026f28745dd1c"
 workers_dev = true
 compatibility_date = "2022-04-14"
+main = "build/worker/shim.mjs"
 
 [vars]
 WORKERS_RS_VERSION = "0.0.9"
 
 [build]
-command = "cargo install -q worker-build && worker-build --release" # required
-
-[build.upload]
-dir = "build/worker"
-format = "modules"
-main = "./shim.mjs"
-
-[[build.upload.rules]]
-globs = ["**/*.wasm"]
-type = "CompiledWasm"
-
-# read more about configuring your Worker via wrangler.toml at:
-# https://developers.cloudflare.com/workers/cli-wrangler/configuration
+command = "cargo install -q worker-build && worker-build --release"
