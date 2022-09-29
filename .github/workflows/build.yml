@@ -9,7 +9,7 @@ on:
       - 'master'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     name: Build
@@ -22,3 +22,23 @@ jobs:
           publish: false
           postCommands: |
             wrangler build
+
+  build-v2:
+    runs-on: ubuntu-latest
+
+    name: Build
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+          target: wasm32-unknown-unknown
+
+      - run: "cargo install -q worker-build"
+
+      - name: build
+        run: "worker-build --release"
+        # https://developers.cloudflare.com/workers/wrangler/compare-v1-v2/#wrangler-1-and-2-comparison-table
