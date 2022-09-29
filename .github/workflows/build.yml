@@ -16,20 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build
-        uses: cookie-s/wrangler-action-for-rust@main
-        with:
-          publish: false
-          postCommands: |
-            wrangler build
-
-  build-v2:
-    runs-on: ubuntu-latest
-
-    name: Build
-    steps:
-      - uses: actions/checkout@v3
-
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
