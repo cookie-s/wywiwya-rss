@@ -1,3 +1,5 @@
+# ==>> https://github.com/cookie-s/wywiwya-rss2 <<==
+
 wywiwya rss
 ===========
 
@@ -5,8 +7,8 @@ WYWIWYA: https://github.com/smallkirby/wywiwya
 
 ### Develop
 
-dev: `wrangler dev --local`
-
+dev: `wrangler dev --experimental-local`
+build: `wrangler publish --dry-run --outdir=dist`
 deploy: `wrangler publish`
 
 

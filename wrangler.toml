@@ -1,5 +1,4 @@
 name = "wywiwya-rss"
-account_id = "9d48568bcdcd05a662c026f28745dd1c"
 workers_dev = true
 compatibility_date = "2022-04-14"
 main = "build/worker/shim.mjs"
@@ -8,4 +7,5 @@ main = "build/worker/shim.mjs"
 WORKERS_RS_VERSION = "0.0.9"
 
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+# --no-default-features: BUG https://github.com/rustwasm/wasm-pack/issues/1186
+command = "cargo install -q wasm-pack --no-default-features && cargo install -q worker-build && worker-build --release"
